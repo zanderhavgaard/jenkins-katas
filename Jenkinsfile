@@ -23,9 +23,6 @@ pipeline {
       parallel {
 
         stage('Say hello!') {
-          options {
-            skipDefaultCheckout(true)
-          }
           steps {
             sh 'echo "hello world!"'
           }
@@ -38,17 +35,11 @@ pipeline {
             }
           }
 
-          options {
-            skipDefaultCheckout(true)
-          }
-
           steps {
             unstash 'code'
               sh 'bash ci/build-app.sh'
               archiveArtifacts 'app/build/libs/'
-              sh 'ls'
               deleteDir()
-              sh 'ls'
           }
         }
 
@@ -59,14 +50,11 @@ pipeline {
             }
           }
 
-          options {
-            skipDefaultCheckout(true)
-          }
-
           steps {
             unstash 'code'
               sh 'ci/unit-test-app.sh'
               junit 'app/build/test-results/test/TEST-*.xml'
+              deleteDir()
           }
         }
       }
