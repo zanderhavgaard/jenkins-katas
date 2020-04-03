@@ -1,17 +1,19 @@
 pipeline {
   agent any
+  skipDefaultCheckout(true)
 
     stages {
 
       stage('git clone') {
-          agent {
-            node {
-              label 'Host'
-            }
+        agent {
+          node {
+            label 'Host'
           }
-          steps {
-            stash excludes: '.git', name: 'code'
-          }
+        }
+        steps {
+          git 'https://github.com/zanderhavgaard/jenkins-katas'
+          stash excludes: '.git', name: 'code'
+        }
       }
 
       stage('Parallel execution') {
@@ -65,4 +67,11 @@ pipeline {
       }
 
     }
-}
+
+  post {
+    always {
+
+      deleteDir() /* clean up our workspace */
+    }
+
+  }
