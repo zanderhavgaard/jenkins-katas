@@ -4,7 +4,11 @@ pipeline {
     stages {
 
       stage('git clone') {
-        agent 'Host'
+          agent {
+            node {
+              label 'Host'
+            }
+          }
           steps {
             stash excludes: '.git', name: 'code'
           }
