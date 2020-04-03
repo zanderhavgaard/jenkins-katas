@@ -11,7 +11,7 @@ pipeline {
         }
         steps {
           git 'https://github.com/zanderhavgaard/jenkins-katas'
-          stash excludes: '.git', name: 'code'
+            stash excludes: '.git', name: 'code'
         }
       }
 
@@ -72,5 +72,6 @@ pipeline {
 
       deleteDir() /* clean up our workspace */
     }
-
   }
+
+}
