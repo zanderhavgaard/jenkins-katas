@@ -14,7 +14,7 @@ pipeline {
         }
       }
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/zanderhavgaard/jenkins-katas']]])
+        checkout scm
         stash excludes: '.git', name: 'code'
       }
     }
