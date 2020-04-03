@@ -41,6 +41,7 @@ pipeline {
               unstash 'code'
                 sh 'bash ci/build-app.sh'
                 archiveArtifacts 'app/build/libs/'
+                stash excludes: '.git', name: 'build_app'
                 deleteDir()
             }
           }
@@ -71,8 +72,7 @@ pipeline {
           DOCKERCREDS = credentials('docker_login') //use the credentials just created in this stage
         }
         steps {
-          unstash 'code' //unstash the repository code
-          unarchive mapping: ['app/build/libs/' : 'app/build/libs/']
+          unstash 'build_app' //unstash the repository code
           sh 'ci/build-docker.sh'
           sh 'echo "$DOCKERCREDS_PSW" | docker login -u "$DOCKERCREDS_USR" --password-stdin' //login to docker hub with the credentials above
           sh 'ci/push-docker.sh'
