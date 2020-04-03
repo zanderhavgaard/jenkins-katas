@@ -2,7 +2,9 @@ pipeline {
   agent any
   stages {
     stage('git clone') {
+      steps {
       stash excludes: '.git', name: 'code'
+      }
     }
     stage('Parallel execution') {
       parallel {
