@@ -19,10 +19,6 @@ pipeline {
         parallel {
 
           stage('Say hello!') {
-            options {
-              skipDefaultCheckout(true)
-            }
-
             steps {
               sh 'echo "hello world!"'
             }
