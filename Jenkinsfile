@@ -1,63 +1,64 @@
 pipeline {
   agent any
 
-  stages {
+    stages {
 
-    stage('git clone') {
-      steps {
-      stash excludes: '.git', name: 'code'
-      }
-    }
-
-    stage('Parallel execution') {
-      parallel {
-
-        stage('Say hello!') {
+      stage('git clone') {
+        agent 'Host'
           steps {
-            sh 'echo "hello world!"'
+            stash excludes: '.git', name: 'code'
           }
-        }
+      }
 
-        stage('build app') {
-          agent {
-            docker {
-              image 'gradle:jdk11'
+      stage('Parallel execution') {
+        parallel {
+
+          stage('Say hello!') {
+            steps {
+              sh 'echo "hello world!"'
             }
           }
 
-          options {
-            skipDefaultCheckout(true)
-          }
+          stage('build app') {
+            agent {
+              docker {
+                image 'gradle:jdk11'
+              }
+            }
 
-          steps {
-            unstash 'code'
-            sh 'bash ci/build-app.sh'
-            archiveArtifacts 'app/build/libs/'
-            sh 'ls'
-            deleteDir()
-            sh 'ls'
-          }
-        }
+            options {
+              skipDefaultCheckout(true)
+            }
 
-        stage('test app') {
-          agent {
-            docker {
-              image 'gradle:jdk11'
+            steps {
+              unstash 'code'
+                sh 'bash ci/build-app.sh'
+                archiveArtifacts 'app/build/libs/'
+                sh 'ls'
+                deleteDir()
+                sh 'ls'
             }
           }
 
-          options {
-            skipDefaultCheckout(true)
-          }
+          stage('test app') {
+            agent {
+              docker {
+                image 'gradle:jdk11'
+              }
+            }
 
-          steps {
-            unstash 'code'
-              sh 'ci/unit-test-app.sh'
-              junit 'app/build/test-results/test/TEST-*.xml'
+            options {
+              skipDefaultCheckout(true)
+            }
+
+            steps {
+              unstash 'code'
+                sh 'ci/unit-test-app.sh'
+                junit 'app/build/test-results/test/TEST-*.xml'
+            }
           }
         }
       }
-    }
 
-  }
+    }
 }
