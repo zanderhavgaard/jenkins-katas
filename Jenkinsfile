@@ -1,13 +1,17 @@
 pipeline {
   agent any
+
   stages {
+
     stage('git clone') {
       steps {
       stash excludes: '.git', name: 'code'
       }
     }
+
     stage('Parallel execution') {
       parallel {
+
         stage('Say hello!') {
           steps {
             sh 'echo "hello world!"'
@@ -20,7 +24,11 @@ pipeline {
               image 'gradle:jdk11'
             }
           }
-          skipDefaultCheckout(true)
+
+          options {
+            skipDefaultCheckout(true)
+          }
+
           steps {
             unstash 'code'
             sh 'bash ci/build-app.sh'
@@ -31,6 +39,23 @@ pipeline {
           }
         }
 
+        stage('test app') {
+          agent {
+            docker {
+              image 'gradle:jdk11'
+            }
+          }
+
+          options {
+            skipDefaultCheckout(true)
+          }
+
+          steps {
+            unstash 'code'
+              sh 'ci/unit-test-app.sh'
+              junit 'app/build/test-results/test/TEST-*.xml'
+          }
+        }
       }
     }
 
