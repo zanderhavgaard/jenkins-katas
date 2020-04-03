@@ -1,8 +1,5 @@
 pipeline {
   agent any
-  environment {
-    docker_username = 'zanderhavgaard'
-  }
 
     stages {
 
@@ -70,6 +67,7 @@ pipeline {
 
       stage('docker build') {
         environment {
+          docker_username = 'zanderhavgaard'
           DOCKERCREDS = credentials('docker_login') //use the credentials just created in this stage
         }
         steps {
