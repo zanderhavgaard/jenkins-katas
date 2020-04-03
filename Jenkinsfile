@@ -45,7 +45,6 @@ pipeline {
                 sh 'bash ci/build-app.sh'
                 archiveArtifacts 'app/build/libs/'
                 stash excludes: '.git', name: 'build_app'
-                deleteDir()
             }
           }
 
@@ -64,7 +63,6 @@ pipeline {
               unstash 'code'
                 sh 'ci/unit-test-app.sh'
                 junit 'app/build/test-results/test/TEST-*.xml'
-                deleteDir()
             }
           }
         }
@@ -86,7 +84,6 @@ pipeline {
 
   post {
     always {
-
       deleteDir() /* clean up our workspace */
     }
   }
