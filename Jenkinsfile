@@ -41,9 +41,7 @@ pipeline {
               unstash 'code'
                 sh 'bash ci/build-app.sh'
                 archiveArtifacts 'app/build/libs/'
-                sh 'ls'
                 deleteDir()
-                sh 'ls'
             }
           }
 
@@ -62,6 +60,7 @@ pipeline {
               unstash 'code'
                 sh 'ci/unit-test-app.sh'
                 junit 'app/build/test-results/test/TEST-*.xml'
+                deleteDir()
             }
           }
         }
@@ -73,6 +72,7 @@ pipeline {
         }
         steps {
           unstash 'code' //unstash the repository code
+          unarchive mapping: ['app/build/libs/' : 'app/build/libs/']
           sh 'ci/build-docker.sh'
           sh 'echo "$DOCKERCREDS_PSW" | docker login -u "$DOCKERCREDS_USR" --password-stdin' //login to docker hub with the credentials above
           sh 'ci/push-docker.sh'
